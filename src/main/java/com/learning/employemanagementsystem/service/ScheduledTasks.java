@@ -11,6 +11,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,18 +24,19 @@ public class ScheduledTasks {
 
     private final ProfileDao profileDao;
 
-    private final EmployeeMapper employeeMapper;
-
     private final ProfileMapper profileMapper;
+
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void updateProfileStatusLeavingDate() {
         List<EmployeeModel> employees = employeeDao.getAll();
-        for (EmployeeModel employee:employees) {
-            ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
-            if(employee.getLeavingDate() != null && profile.getProfileStatus() != ProfileStatus.INACTIVE) {
-                profile.setProfileStatus(ProfileStatus.INACTIVE);
-                profileDao.save(profile);
+        for (EmployeeModel employee : employees) {
+            if (employee.getLeavingDate() != null && employee.getLeavingDate().before(new Date())) {
+                ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
+                if (employee.getLeavingDate() != null && profile.getProfileStatus() != ProfileStatus.INACTIVE) {
+                    profile.setProfileStatus(ProfileStatus.INACTIVE);
+                    profileDao.save(profile);
+                }
             }
         }
     }

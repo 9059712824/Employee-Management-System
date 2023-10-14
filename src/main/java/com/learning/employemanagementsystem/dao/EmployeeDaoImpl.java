@@ -44,4 +44,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
     public EmployeeModel getEmployeeById(UUID id) {
         return employeeMapper.employeeToEmployeeModel(employeeRepository.getReferenceById(id));
     }
+
+    @Override
+    public EmployeeModel getByEmail(String email) {
+        return employeeMapper.employeeToEmployeeModel(employeeRepository.getByEmail(email));
+    }
 }

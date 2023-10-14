@@ -1,5 +1,6 @@
 package com.learning.employemanagementsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,9 +37,10 @@ public class Profile {
 
     @OneToOne
     @JoinColumn(name = "employee_id")
+    @JsonIgnore
     private Employee employee;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
 

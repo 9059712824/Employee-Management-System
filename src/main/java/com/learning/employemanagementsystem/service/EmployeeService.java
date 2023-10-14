@@ -5,12 +5,15 @@ import com.learning.employemanagementsystem.dto.AddEmployeeResponseDto;
 import com.learning.employemanagementsystem.dto.UpdateLeavingDate;
 import com.learning.employemanagementsystem.model.EmployeeModel;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface EmployeeService {
-    AddEmployeeDto addEmployee(AddEmployeeDto employeeDto);
+    AddEmployeeDto add(AddEmployeeDto employeeDto);
 
-    EmployeeModel viewEmployee(UUID id);
+    EmployeeModel view(UUID id);
 
     void updateLeavingDate(UUID id, UpdateLeavingDate updateLeavingDate);
+
+    List<EmployeeModel> viewAll();
 }

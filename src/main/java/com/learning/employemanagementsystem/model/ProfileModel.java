@@ -1,5 +1,6 @@
 package com.learning.employemanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.employemanagementsystem.entity.*;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,6 +26,7 @@ public class ProfileModel {
 
     private Date updatedTime;
 
+    @JsonIgnore
     private Employee employee;
 
     private Department department;

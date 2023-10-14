@@ -27,6 +27,7 @@ public class EmployeeModel {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
     private Integer age;
@@ -43,8 +44,10 @@ public class EmployeeModel {
     )
     private String password;
 
+    @Temporal(TemporalType.DATE)
     private Date joiningDate;
 
+    @Temporal(TemporalType.DATE)
     private Date leavingDate;
 
     @CreationTimestamp

@@ -24,6 +24,7 @@
 		<modelmapper.version>3.1.1</modelmapper.version>
 		<twilio.version>9.7.0</twilio.version>
 		<spring-security.version>6.1.4</spring-security.version>
+		<apache-poi.version>5.2.4</apache-poi.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -73,6 +74,16 @@
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>${modelmapper.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${apache-poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${apache-poi.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

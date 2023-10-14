@@ -17,4 +17,6 @@ public interface EmployeeDao {
     List<EmployeeModel> getAll();
 
     EmployeeModel getEmployeeById(UUID id);
+
+    EmployeeModel getByEmail(String email);
 }

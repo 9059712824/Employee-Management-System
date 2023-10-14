@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Override
-    public AddEmployeeDto addEmployee(AddEmployeeDto employeeDto) {
+    public AddEmployeeDto add(AddEmployeeDto employeeDto) {
         if(employeeDao.existsByEmail(employeeDto.getEmail())){
             throw new AlreadyFoundException("Email already exists: " + employeeDto.getEmail());
         }
@@ -57,7 +58,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public EmployeeModel viewEmployee(UUID id) {
+    public EmployeeModel view(UUID id) {
         return employeeDao.getEmployeeById(id);
     }
 
@@ -69,6 +70,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         employee.setLeavingDate(updateLeavingDate.getLeavingDate());
         employeeDao.save(employee);
+    }
+
+    @Override
+    public List<EmployeeModel> viewAll() {
+        var employees = employeeDao.getAll();
+        return employees;
     }
 
     public String generateRandomPassword() {
