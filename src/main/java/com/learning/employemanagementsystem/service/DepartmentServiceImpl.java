@@ -4,7 +4,6 @@ import com.learning.employemanagementsystem.dao.DepartmentDao;
 import com.learning.employemanagementsystem.dao.EmployeeDao;
 import com.learning.employemanagementsystem.dao.ProfileDao;
 import com.learning.employemanagementsystem.dto.AddDepartmentDto;
-import com.learning.employemanagementsystem.entity.Profile;
 import com.learning.employemanagementsystem.mapper.DepartmentMapper;
 import com.learning.employemanagementsystem.mapper.ProfileMapper;
 import com.learning.employemanagementsystem.model.DepartmentModel;
@@ -78,7 +77,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             Row dataRow = rowIterator.next();
 
             Iterator<Cell> dataCellIterator = dataRow.cellIterator();
-            List<String> rowValue  = new ArrayList<>();
+            List<String> rowValue = new ArrayList<>();
             while (dataCellIterator.hasNext()) {
                 Cell cell = dataCellIterator.next();
                 String cellValue = dataFormatter.formatCellValue(cell);
@@ -89,13 +88,22 @@ public class DepartmentServiceImpl implements DepartmentService {
             System.out.println();
         }
 
-        for (List<String> value: rowValues) {
+        for (List<String> value : rowValues) {
             DepartmentModel department = departmentDao.getByName(value.get(0));
             EmployeeModel employee = employeeDao.getByEmail(value.get(1));
-            if( employee != null && department != null) {
-                ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
-                profile.setDepartment(departmentMapper.departmentModelToDepartment(department));
-                profileDao.save(profile);
+            String action = value.get(2);
+            if (employee != null && department != null) {
+                if (action.equalsIgnoreCase("add")) {
+                    ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
+                    profile.setDepartment(departmentMapper.departmentModelToDepartment(department));
+                    profileDao.save(profile);
+                } else if (action.equalsIgnoreCase("remove")) {
+                    ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
+                    if (profile.getDepartment().getId().equals(department.getId())) {
+                        profile.setDepartment(null);
+                        profileDao.save(profile);
+                    }
+                }
             }
         }
     }

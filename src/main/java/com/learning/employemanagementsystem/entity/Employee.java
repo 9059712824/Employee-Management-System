@@ -59,6 +59,16 @@ public class Employee {
     @Email
     private String email;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Employee> employees;
+
+    @Column(columnDefinition = "BIT")
+    private Boolean isManager;
+
     @Column(nullable = false)
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(

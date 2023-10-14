@@ -38,6 +38,10 @@ public class EmployeeModel {
     @Email
     private String email;
 
+    private Employee manager;
+
+    private Boolean isManager;
+
     @Pattern(
             regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$",
             message = "Password must contain at least one digit, one special character, and one letter"
