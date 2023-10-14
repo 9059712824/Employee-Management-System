@@ -42,7 +42,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentDao.save(departmentMapper.addDepartmentToDepartmentModel(department));
     }
 
-    public void readFile(MultipartFile file) throws IOException {
+    public void departmentPermission(MultipartFile file) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
 
         Sheet sheet = workbook.getSheetAt(0);

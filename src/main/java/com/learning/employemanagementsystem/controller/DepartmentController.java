@@ -24,9 +24,9 @@ public class DepartmentController {
         return new ResponseEntity<>(departmentService.add(department), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/addDepartmentPermission/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> fileRead(@RequestParam(name = "file") MultipartFile file) throws IOException {
-        departmentService.readFile(file);
+    @PostMapping(value = "/departmentPermission/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> departmentPermission(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        departmentService.departmentPermission(file);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

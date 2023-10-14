@@ -9,5 +9,5 @@ import java.io.IOException;
 public interface DepartmentService {
     DepartmentModel add(AddDepartmentDto department);
 
-    void readFile(MultipartFile file) throws IOException;
+    void departmentPermission(MultipartFile file) throws IOException;
 }
