@@ -25,6 +25,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public Boolean existsById(UUID id) {
+        return employeeRepository.existsById(id);
+    }
+
+    @Override
     public EmployeeModel save(EmployeeModel employeeModel) {
         return employeeMapper.employeeToEmployeeModel(employeeRepository.save(employeeMapper.employeeModelToEmployee(employeeModel)));
     }

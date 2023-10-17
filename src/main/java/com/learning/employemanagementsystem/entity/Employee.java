@@ -1,5 +1,6 @@
 package com.learning.employemanagementsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -64,6 +65,7 @@ public class Employee {
     private Employee manager;
 
     @OneToMany(mappedBy = "manager")
+    @JsonIgnore
     private List<Employee> employees;
 
     @Column(columnDefinition = "BIT")
@@ -93,15 +95,14 @@ public class Employee {
     private Date updatedTime;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
     private List<Leave> leave;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonIgnoreProperties("employee")
     private List<Experience> experience;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("employee")
     private List<Education> education;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

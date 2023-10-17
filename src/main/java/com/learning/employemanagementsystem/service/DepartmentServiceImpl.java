@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Sheet sheet = workbook.getSheetAt(0);
         if (sheet == null) {
-            System.out.println("Current sheet is null");
+            throw new RuntimeException("Sheet Not Found");
         }
 
         // Read and store the column headings (header)
@@ -61,9 +62,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             String cellValue = dataFormatter.formatCellValue(cell);
             columnHeadings.add(cellValue);
         }
-
-        // Print the column headings
-        System.out.println("Column Headings: " + columnHeadings);
 
         // Read and print the data
         Iterator<Row> rowIterator = sheet.iterator();

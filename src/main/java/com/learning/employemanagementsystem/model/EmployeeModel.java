@@ -1,5 +1,6 @@
 package com.learning.employemanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.employemanagementsystem.entity.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -39,6 +40,9 @@ public class EmployeeModel {
     private String email;
 
     private Employee manager;
+
+    @JsonIgnore
+    private List<Employee> employees;
 
     private Boolean isManager;
 

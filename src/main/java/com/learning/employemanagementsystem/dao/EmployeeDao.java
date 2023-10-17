@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface EmployeeDao {
     Boolean existsByEmail(String email);
 
+    Boolean existsById(UUID id);
+
     EmployeeModel save(EmployeeModel employeeModel);
 
     EmployeeModel getById(UUID id);

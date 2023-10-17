@@ -1,12 +1,15 @@
 package com.learning.employemanagementsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
@@ -26,11 +29,12 @@ public class Education {
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    @JsonBackReference
+    @JsonIgnore
     private Employee employee;
 
     @Column(nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private EducationDegree degree;
 
     @Column(nullable = false)
     private String schoolName;
@@ -45,4 +49,12 @@ public class Education {
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date endDate;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Date createdTime;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Date updatedTime;
 }
