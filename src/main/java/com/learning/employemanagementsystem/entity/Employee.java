@@ -2,7 +2,6 @@ package com.learning.employemanagementsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -54,6 +53,7 @@ public class Employee {
 
     @Column(nullable = false)
     @Pattern(regexp = "^\\+?[0-9()-]+")
+    @JsonIgnore
     private String phoneNumber;
 
     @Column(nullable = false, unique = true)
@@ -77,6 +77,7 @@ public class Employee {
             regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$",
             message = "Password must contain at least one digit, one special character, and one letter"
     )
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)

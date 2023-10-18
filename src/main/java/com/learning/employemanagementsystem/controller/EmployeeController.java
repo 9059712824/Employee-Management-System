@@ -47,4 +47,10 @@ public class EmployeeController {
         employeeService.managerAccess(file);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping(value = "/updateManagerId/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateManagerId(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        employeeService.updateManagerId(file);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

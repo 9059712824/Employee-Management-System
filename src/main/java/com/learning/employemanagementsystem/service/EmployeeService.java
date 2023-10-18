@@ -20,4 +20,6 @@ public interface EmployeeService {
     List<EmployeeModel> viewAll();
 
     void managerAccess(MultipartFile file) throws IOException;
+
+    void updateManagerId(MultipartFile file) throws IOException;
 }

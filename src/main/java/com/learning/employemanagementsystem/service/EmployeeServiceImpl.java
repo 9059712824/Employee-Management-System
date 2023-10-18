@@ -113,6 +113,35 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    @Override
+    public void updateManagerId(MultipartFile file) throws IOException {
+        List<List<String>> rowDatas = fileProcess(file);
+        for (List<String> rowData : rowDatas) {
+            if (rowData.size() != 3) {
+                continue;
+            }
+            String employeeEmail = rowData.get(0), managerEmail = rowData.get(1), action = rowData.get(2);
+            if (StringUtils.isNotBlank(employeeEmail) && StringUtils.isNotBlank(managerEmail) && StringUtils.isNotBlank(action)) {
+
+                if (employeeDao.existsByEmail(employeeEmail) && employeeDao.existsByEmail(managerEmail)) {
+                    EmployeeModel employee = employeeDao.getByEmail(employeeEmail);
+                    EmployeeModel manager = employeeDao.getByEmail(managerEmail);
+                    if ("add".equalsIgnoreCase(action)) {
+                        employee.setManager(employeeMapper.employeeModelToEmployee(manager));
+                        manager.setIsManager(Boolean.TRUE);
+                        employeeDao.save(employee);
+                        employeeDao.save(manager);
+                    } else if ("remove".equalsIgnoreCase(action)) {
+                        if (manager.getId().equals(employee.getManager().getId())) {
+                            employee.setManager(null);
+                            employeeDao.save(employee);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public List<List<String>> fileProcess(MultipartFile file) throws IOException {
         try (XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream())) {
             XSSFSheet sheet = workbook.getSheetAt(0);

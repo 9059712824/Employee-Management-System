@@ -50,6 +50,7 @@ public class EmployeeModel {
             regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$",
             message = "Password must contain at least one digit, one special character, and one letter"
     )
+    @JsonIgnore
     private String password;
 
     @Temporal(TemporalType.DATE)
