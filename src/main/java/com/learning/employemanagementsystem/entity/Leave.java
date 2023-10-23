@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -26,27 +27,23 @@ public class Leave {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_uuid")
     @JsonBackReference
     private Employee employee;
 
+    @OneToMany(mappedBy = "leave")
+    private List<LeaveDay> leaveDays;
+
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date date;
+    private Date startDate;
 
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private LeaveStatus status;
-
-    @Column(nullable = false)
-    @Size(max = 50)
-    private String reason;
-
-    @Size(max=50)
-    private String comments;
+    private Date endDate;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

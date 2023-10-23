@@ -1,29 +1,21 @@
-package com.learning.employemanagementsystem.model;
+package com.learning.employemanagementsystem.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.learning.employemanagementsystem.entity.Employee;
 import com.learning.employemanagementsystem.entity.LeaveStatus;
 import com.learning.employemanagementsystem.entity.LeaveType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.util.Date;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeaveModel {
-
-    private UUID id;
-
-    @JsonIgnore
-    private Employee employee;
+public class ApplyLeaveDto {
 
     @Temporal(TemporalType.DATE)
     private Date startDate;
@@ -38,10 +30,4 @@ public class LeaveModel {
     private LeaveStatus status;
 
     private String reason;
-
-    private String comments;
-
-    private Date createdDate;
-
-    private Date updatedTime;
 }

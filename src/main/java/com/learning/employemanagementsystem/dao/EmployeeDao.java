@@ -14,7 +14,7 @@ public interface EmployeeDao {
 
     EmployeeModel save(EmployeeModel employeeModel);
 
-    EmployeeModel getById(UUID id);
+    EmployeeModel getByUuid(UUID id);
 
     List<EmployeeModel> getAll();
 

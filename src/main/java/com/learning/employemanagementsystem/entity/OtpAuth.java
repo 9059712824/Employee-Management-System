@@ -22,10 +22,10 @@ public class OtpAuth {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @OneToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_uuid")
     private Employee employee;
 
     @Column(nullable = false)

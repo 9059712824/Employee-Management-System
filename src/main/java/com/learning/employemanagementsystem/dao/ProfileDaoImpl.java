@@ -22,6 +22,6 @@ public class ProfileDaoImpl implements ProfileDao{
 
     @Override
     public ProfileModel getProfileByEmployeeId(UUID id) {
-        return profileMapper.profileToProfileModel(profileRepository.getByEmployee_Id(id));
+        return profileMapper.profileToProfileModel(profileRepository.getByEmployee_Uuid(id));
     }
 }

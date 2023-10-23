@@ -24,10 +24,10 @@ public class SalaryPaid {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @ManyToOne
-    @JoinColumn(name = "salaryStructure_id")
+    @JoinColumn(name = "salaryStructure_uuid")
     private SalaryStructure salaryStructure;
 
     @Column(nullable = false, updatable = false)

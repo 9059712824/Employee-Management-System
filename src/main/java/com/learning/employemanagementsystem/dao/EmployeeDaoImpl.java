@@ -35,7 +35,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public EmployeeModel getById(UUID id) {
+    public EmployeeModel getByUuid(UUID id) {
         return employeeMapper.employeeToEmployeeModel(employeeRepository.getReferenceById(id));
     }
 

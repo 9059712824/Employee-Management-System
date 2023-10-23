@@ -97,7 +97,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     profileDao.save(profile);
                 } else if (action.equalsIgnoreCase("remove")) {
                     ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
-                    if (profile.getDepartment().getId().equals(department.getId())) {
+                    if (profile.getDepartment().getUuid().equals(department.getId())) {
                         profile.setDepartment(null);
                         profileDao.save(profile);
                     }

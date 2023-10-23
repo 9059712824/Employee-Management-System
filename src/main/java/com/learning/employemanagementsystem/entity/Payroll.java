@@ -21,18 +21,18 @@ public class Payroll {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_uuid")
     private Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_uuid")
     private Profile profile;
 
     @ManyToOne
-    @JoinColumn(name = "salaryPaid_id")
+    @JoinColumn(name = "salaryPaid_uuid")
     private SalaryPaid salaryPaid;
 
     @Column(nullable = false)

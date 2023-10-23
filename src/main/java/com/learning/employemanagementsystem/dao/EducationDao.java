@@ -10,7 +10,7 @@ public interface EducationDao {
 
     List<EducationModel> getAllByEmployeeId(UUID id);
 
-    EducationModel getById(UUID id);
+    EducationModel getByUuid(UUID id);
 
     void deleteById(UUID id);
 

@@ -23,11 +23,11 @@ public class EducationDaoImpl implements EducationDao{
 
     @Override
     public List<EducationModel> getAllByEmployeeId(UUID id) {
-        return educationMapper.educationListToEducationModelList(educationRepository.getAllByEmployee_Id(id));
+        return educationMapper.educationListToEducationModelList(educationRepository.getAllByEmployee_Uuid(id));
     }
 
     @Override
-    public EducationModel getById(UUID id) {
+    public EducationModel getByUuid(UUID id) {
         return educationMapper.educationToEducationModel(educationRepository.getById(id));
     }
 

@@ -23,7 +23,7 @@ public class Department {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @Column(nullable = false, unique = true)
     private String name;

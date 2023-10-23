@@ -34,7 +34,7 @@ public class EducationServiceImpl implements EducationService {
         if(!employeeDao.existsById(id)) {
             throw new NotFoundException("Education details not found with id: " + id);
         }
-        EmployeeModel employee = employeeDao.getById(id);
+        EmployeeModel employee = employeeDao.getByUuid(id);
 
         List<EducationModel> educations = educationDao.getAllByEmployeeId(id);
         EducationDegree degree = educationDto.getDegree();
@@ -61,7 +61,7 @@ public class EducationServiceImpl implements EducationService {
         if(!educationDao.existsById(id)) {
             throw new NotFoundException("Education details not found with id: " + id);
         }
-        EducationModel education = educationDao.getById(id);
+        EducationModel education = educationDao.getByUuid(id);
         education.setDegree(educationDto.getDegree());
         education.setSchoolName(educationDto.getSchoolName());
         education.setGrade(educationDto.getGrade());
@@ -74,7 +74,7 @@ public class EducationServiceImpl implements EducationService {
     @Override
     public EducationModel get(UUID id) {
         if(educationDao.existsById(id)){
-            return educationDao.getById(id);
+            return educationDao.getByUuid(id);
         }
         throw new NotFoundException("Education details not found with id: " + id);
     }

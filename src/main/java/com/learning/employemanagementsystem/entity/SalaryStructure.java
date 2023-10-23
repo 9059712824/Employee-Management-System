@@ -22,7 +22,7 @@ public class SalaryStructure {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @Column(nullable = false)
     private Double salary;
@@ -37,7 +37,7 @@ public class SalaryStructure {
     private Double monthlyBonus;
 
     @OneToOne
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_uuid")
     private Profile profile;
 
     @OneToMany(mappedBy = "salaryStructure", cascade = CascadeType.ALL)

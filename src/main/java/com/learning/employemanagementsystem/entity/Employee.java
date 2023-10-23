@@ -30,7 +30,7 @@ public class Employee {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @Column(nullable = false)
     @Length(min = 2, max = 15)
@@ -61,7 +61,7 @@ public class Employee {
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "manager_id")
+    @JoinColumn(name = "manager_uuid")
     private Employee manager;
 
     @OneToMany(mappedBy = "manager")
@@ -121,7 +121,7 @@ public class Employee {
     @Override
     public String toString() {
         return "Employee{" +
-                "id=" + id +
+                "id=" + uuid +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", gender=" + gender +

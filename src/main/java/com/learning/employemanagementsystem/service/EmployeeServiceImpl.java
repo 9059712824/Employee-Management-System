@@ -132,7 +132,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                         employeeDao.save(employee);
                         employeeDao.save(manager);
                     } else if ("remove".equalsIgnoreCase(action)) {
-                        if (manager.getId().equals(employee.getManager().getId())) {
+                        if (manager.getId().equals(employee.getManager().getUuid())) {
                             employee.setManager(null);
                             employeeDao.save(employee);
                         }

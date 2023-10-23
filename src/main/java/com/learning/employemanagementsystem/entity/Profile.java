@@ -25,7 +25,7 @@ public class Profile {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "varchar(36)", updatable = false, nullable = false)
-    private UUID id;
+    private UUID uuid;
 
     @Column(nullable = false, name = "job_title")
     @Enumerated(EnumType.STRING)
@@ -36,12 +36,12 @@ public class Profile {
     private ProfileStatus profileStatus;
 
     @OneToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_uuid")
     @JsonIgnore
     private Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_uuid")
     private Department department;
 
     @UpdateTimestamp
