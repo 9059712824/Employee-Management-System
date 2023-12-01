@@ -51,7 +51,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new RuntimeException("Sheet Not Found");
         }
 
-        // Read and store the column headings (header)
         Row headerRow = sheet.getRow(0);
         List<String> columnHeadings = new ArrayList<>();
         DataFormatter dataFormatter = new DataFormatter();
@@ -63,9 +62,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             columnHeadings.add(cellValue);
         }
 
-        // Read and print the data
         Iterator<Row> rowIterator = sheet.iterator();
-        // Skip the header row (already processed)
         if (rowIterator.hasNext()) {
             rowIterator.next();
         }
