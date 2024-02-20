@@ -1,88 +1,82 @@
-package com.learning.employemanagementsystem.service;
+package com.learning.employemanagementsystem.service.Impl;
 
-import com.learning.employemanagementsystem.dao.EducationDao;
-import com.learning.employemanagementsystem.dao.EmployeeDao;
 import com.learning.employemanagementsystem.dto.EducationDto;
 import com.learning.employemanagementsystem.entity.EducationDegree;
 import com.learning.employemanagementsystem.exception.AlreadyFoundException;
 import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.EducationMapper;
-import com.learning.employemanagementsystem.mapper.EmployeeMapper;
-import com.learning.employemanagementsystem.model.EducationModel;
-import com.learning.employemanagementsystem.model.EmployeeModel;
+import com.learning.employemanagementsystem.entity.Education;
+import com.learning.employemanagementsystem.repository.EducationRepository;
+import com.learning.employemanagementsystem.service.EducationService;
+import com.learning.employemanagementsystem.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class EducationServiceImpl implements EducationService {
 
-    private final EducationDao educationDao;
+    private final EducationRepository educationRepository;
 
     private final EducationMapper educationMapper;
 
-    private final EmployeeMapper employeeMapper;
-
-    private final EmployeeDao employeeDao;
+    private final EmployeeService employeeService;
 
     @Override
-    public EducationModel save(EducationDto educationDto, UUID id) {
-        if(!employeeDao.existsById(id)) {
-            throw new NotFoundException("Education details not found with id: " + id);
-        }
-        EmployeeModel employee = employeeDao.getByUuid(id);
+    public Education save(EducationDto educationDto, UUID id) {
+        var employee = employeeService.getById(id);
 
-        List<EducationModel> educations = educationDao.getAllByEmployeeId(id);
-        EducationDegree degree = educationDto.getDegree();
+        var educations = educationRepository.getAllByEmployee_Uuid(id);
+        var degree = educationDto.getDegree();
 
         if (educations == null) {
             if (degree != EducationDegree.SSC_10TH) {
                 throw new NotFoundException("Education Details of " + EducationDegree.SSC_10TH + " not found");
             }
         } else {
-            Optional<EducationModel> isDegreePresent = educations.stream()
+            var isDegreePresent = educations.stream()
                     .filter(education -> education.getDegree().equals(educationDto.getDegree())).findFirst();
             if (isDegreePresent.isPresent()) {
                 throw new AlreadyFoundException("Degree already exists: " + degree.toString());
             }
         }
 
-        EducationModel addEducation = educationMapper.addEducationDtoToEducationModel(educationDto);
-        addEducation.setEmployee(employeeMapper.employeeModelToEmployee(employee));
-        return educationDao.save(addEducation);
+        var addEducation = educationMapper.addEducationDtoToEducation(educationDto);
+        addEducation.setEmployee(employee);
+        return educationRepository.save(addEducation);
     }
 
     @Override
-    public EducationModel update(EducationDto educationDto, UUID id) {
-        if(!educationDao.existsById(id)) {
+    public Education update(EducationDto educationDto, UUID id) {
+        if (!educationRepository.existsById(id)) {
             throw new NotFoundException("Education details not found with id: " + id);
         }
-        EducationModel education = educationDao.getByUuid(id);
+        Education education = getById(id);
         education.setDegree(educationDto.getDegree());
         education.setSchoolName(educationDto.getSchoolName());
         education.setGrade(educationDto.getGrade());
         education.setStartDate(educationDto.getStartDate());
         education.setEndDate(educationDto.getEndDate());
 
-        return educationDao.save(education);
+        return educationRepository.save(education);
     }
 
     @Override
-    public EducationModel get(UUID id) {
-        if(educationDao.existsById(id)){
-            return educationDao.getByUuid(id);
+    public Education getById(UUID id) {
+        var education = educationRepository.findById(id);
+        if (education.isPresent()) {
+            return education.get();
         }
         throw new NotFoundException("Education details not found with id: " + id);
     }
 
     @Override
-    public List<EducationModel> getAll(UUID employeeId) {
-        List<EducationModel> educations = educationDao.getAllByEmployeeId(employeeId);
-        if(educations == null) {
+    public List<Education> getAll(UUID employeeId) {
+        List<Education> educations = educationRepository.getAllByEmployee_Uuid(employeeId);
+        if (educations == null) {
             throw new NotFoundException("Education details not  found");
         }
         return educations;
@@ -90,13 +84,12 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     public void deleteById(UUID id) {
-        if(educationDao.existsById(id)){
-            educationDao.deleteById(id);
-        }
-        else{
+        var education = educationRepository.findById(id);
+        if (education.isPresent()) {
+            educationRepository.deleteById(id);
+        } else {
             throw new NotFoundException("Education details not found with id: " + id);
         }
-
     }
 
 }

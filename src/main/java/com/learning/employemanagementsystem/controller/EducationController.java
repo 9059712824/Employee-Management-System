@@ -27,7 +27,7 @@ public class EducationController {
 
     @GetMapping("/getEducationDetails/{id}")
     public ResponseEntity<?> get(@PathVariable UUID id) {
-        return new ResponseEntity<>(educationService.get(id), HttpStatus.OK);
+        return new ResponseEntity<>(educationService.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("/getAllEducationDetails/{employeeId}")

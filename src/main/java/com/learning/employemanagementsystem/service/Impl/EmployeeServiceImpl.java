@@ -1,25 +1,22 @@
-package com.learning.employemanagementsystem.service;
+package com.learning.employemanagementsystem.service.Impl;
 
-import com.learning.employemanagementsystem.dao.EmployeeDao;
-import com.learning.employemanagementsystem.dao.ProfileDao;
 import com.learning.employemanagementsystem.dto.AddEmployeeDto;
-import com.learning.employemanagementsystem.dto.AddEmployeeResponseDto;
 import com.learning.employemanagementsystem.dto.UpdateLeavingDate;
 import com.learning.employemanagementsystem.entity.JobTitleType;
+import com.learning.employemanagementsystem.entity.Profile;
 import com.learning.employemanagementsystem.entity.ProfileStatus;
 import com.learning.employemanagementsystem.exception.AlreadyFoundException;
 import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.EmployeeMapper;
-import com.learning.employemanagementsystem.mapper.ProfileMapper;
-import com.learning.employemanagementsystem.model.EmployeeModel;
-import com.learning.employemanagementsystem.model.ProfileModel;
+import com.learning.employemanagementsystem.entity.Employee;
+import com.learning.employemanagementsystem.repository.EmployeeRepository;
+import com.learning.employemanagementsystem.repository.ProfileRepository;
+import com.learning.employemanagementsystem.service.EmployeeService;
 import lombok.AllArgsConstructor;
-import org.apache.commons.collections4.functors.WhileClosure;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -37,55 +33,55 @@ import java.util.*;
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final EmployeeDao employeeDao;
+    private final EmployeeRepository employeeRepository;
 
-    private final ProfileDao profileDao;
+    private final ProfileRepository profileRepository;
 
     private final EmployeeMapper employeeMapper;
-
-    private final ProfileMapper profileMapper;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public AddEmployeeDto add(AddEmployeeDto employeeDto) {
-        if (employeeDao.existsByEmail(employeeDto.getEmail())) {
+        if (employeeRepository.existsByEmail(employeeDto.getEmail())) {
             throw new AlreadyFoundException("Email already exists: " + employeeDto.getEmail());
         }
-        Period period = Period.between(employeeDto.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now());
+        var period = Period.between(employeeDto.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now());
         employeeDto.setAge(period.getYears());
-        var employee = employeeMapper.addEmployeeDtoToEmployeeModel(employeeDto);
+        var employee = employeeMapper.addEmployeeDtoToEmployee(employeeDto);
         employee.setPassword(passwordEncoder.encode(generateRandomPassword()));
-        var updatedEmployee = employeeDao.save(employee);
-        var profile = new ProfileModel();
+        employee.setIsManager(Boolean.FALSE);
+        var updatedEmployee = employeeRepository.save(employee);
+        var profile = new Profile();
         profile.setProfileStatus(ProfileStatus.PENDING);
         profile.setJobTitle(JobTitleType.ENGINEER_TRAINEE);
-        profile.setEmployee(employeeMapper.employeeModelToEmployee(updatedEmployee));
-        employee.setProfile(profileMapper.profileModelToProfile(profile));
+        profile.setEmployee(updatedEmployee);
+        employee.setProfile(profile);
 
-        profileDao.save(profile);
-        return employeeMapper.employeeModelToAddEmployeeDto(employee);
+        profileRepository.save(profile);
+        return employeeMapper.EmployeeToAddEmployeeDto(employee);
     }
 
     @Override
-    public EmployeeModel view(UUID id) {
-        return employeeDao.getEmployeeById(id);
+    public Employee getById(UUID id) {
+        var employee = employeeRepository.findById(id);
+
+        if (employee.isEmpty()) {
+            throw new NotFoundException("employee not found with id: " + id);
+        }
+        return employee.get();
     }
 
     @Override
     public void updateLeavingDate(UUID id, UpdateLeavingDate updateLeavingDate) {
-        EmployeeModel employee = employeeDao.getEmployeeById(id);
-        if (employee == null) {
-            throw new NotFoundException("employee not found with id: " + id);
-        }
+        var employee = getById(id);
         employee.setLeavingDate(updateLeavingDate.getLeavingDate());
-        employeeDao.save(employee);
+        employeeRepository.save(employee);
     }
 
     @Override
-    public List<EmployeeModel> viewAll() {
-        var employees = employeeDao.getAll();
-        return employees;
+    public List<Employee> viewAll() {
+        return employeeRepository.findAll();
     }
 
     public void managerAccess(MultipartFile file) throws IOException {
@@ -100,7 +96,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             String action = rowValue.get(1);
 
             if (StringUtils.isNotBlank(action) && StringUtils.isNotBlank(email)) {
-                EmployeeModel employee = employeeDao.getByEmail(email);
+                Employee employee = employeeRepository.getByEmail(email);
 
                 if ("add".equalsIgnoreCase(action)) {
                     employee.setIsManager(Boolean.TRUE);
@@ -108,7 +104,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     employee.setIsManager(Boolean.FALSE);
                 }
 
-                employeeDao.save(employee);
+                employeeRepository.save(employee);
             }
         }
     }
@@ -123,22 +119,32 @@ public class EmployeeServiceImpl implements EmployeeService {
             String employeeEmail = rowData.get(0), managerEmail = rowData.get(1), action = rowData.get(2);
             if (StringUtils.isNotBlank(employeeEmail) && StringUtils.isNotBlank(managerEmail) && StringUtils.isNotBlank(action)) {
 
-                if (employeeDao.existsByEmail(employeeEmail) && employeeDao.existsByEmail(managerEmail)) {
-                    EmployeeModel employee = employeeDao.getByEmail(employeeEmail);
-                    EmployeeModel manager = employeeDao.getByEmail(managerEmail);
+                if (employeeRepository.existsByEmail(employeeEmail) && employeeRepository.existsByEmail(managerEmail)) {
+                    Employee employee = employeeRepository.getByEmail(employeeEmail);
+                    Employee manager = employeeRepository.getByEmail(managerEmail);
                     if ("add".equalsIgnoreCase(action)) {
-                        employee.setManager(employeeMapper.employeeModelToEmployee(manager));
+                        employee.setManager(manager);
                         manager.setIsManager(Boolean.TRUE);
-                        employeeDao.save(employee);
-                        employeeDao.save(manager);
+                        employeeRepository.save(employee);
+                        employeeRepository.save(manager);
                     } else if ("remove".equalsIgnoreCase(action)) {
-                        if (manager.getId().equals(employee.getManager().getUuid())) {
+                        if (manager.getUuid().equals(employee.getManager().getUuid())) {
                             employee.setManager(null);
-                            employeeDao.save(employee);
+                            employeeRepository.save(employee);
                         }
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public List<Employee> getByManagerUuid(UUID managerId) {
+        var employee = getById(managerId);
+        if (employee.getIsManager().equals(Boolean.TRUE)) {
+            return employeeRepository.getAllByManagerUuid(managerId);
+        } else {
+            throw new NotFoundException("User don't have manager access");
         }
     }
 
@@ -190,7 +196,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     public String generateRandomPassword() {
-        String password = null;
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         Random random = new Random();

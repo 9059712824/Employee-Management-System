@@ -1,9 +1,19 @@
 package com.learning.employemanagementsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,14 +23,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "leaves")
+@Entity(name = "leaves")
+@Builder
 public class Leave {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -31,19 +40,26 @@ public class Leave {
 
     @ManyToOne
     @JoinColumn(name = "employee_uuid")
-    @JsonBackReference
+    @JsonIgnore
     private Employee employee;
 
-    @OneToMany(mappedBy = "leave")
-    private List<LeaveDay> leaveDays;
-
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
-    private Date startDate;
+    private Date date;
 
-    @Temporal(TemporalType.DATE)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Date endDate;
+    private LeaveType type;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private LeaveStatus status;
+
+    @Column(nullable = false)
+    @Size(max = 50)
+    private String reason;
+
+    @Size(max = 50)
+    private String comments;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
