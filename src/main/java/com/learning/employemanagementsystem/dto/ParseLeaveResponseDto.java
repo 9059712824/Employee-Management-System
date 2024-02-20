@@ -1,9 +1,8 @@
 package com.learning.employemanagementsystem.dto;
 
-import com.learning.employemanagementsystem.entity.LeaveStatus;
 import com.learning.employemanagementsystem.entity.LeaveType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,12 +14,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplyLeaveDto {
+public class ParseLeaveResponseDto {
 
     @Temporal(TemporalType.DATE)
     private Date date;
 
     private LeaveType type;
-
-    private String reason;
 }

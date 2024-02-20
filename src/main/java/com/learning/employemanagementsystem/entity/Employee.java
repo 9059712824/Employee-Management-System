@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Employee {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -68,7 +70,7 @@ public class Employee {
     @JsonIgnore
     private List<Employee> employees;
 
-    @Column(columnDefinition = "BIT")
+    @Column(nullable = false)
     private Boolean isManager;
 
     @Column(nullable = false)
@@ -96,14 +98,18 @@ public class Employee {
     private Date updatedTime;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("employee")
+    @JsonIgnore
     private List<Leave> leave;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("employee")
+    @JsonIgnore
     private List<Experience> experience;
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("employee")
+    @JsonIgnore
     private List<Education> education;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

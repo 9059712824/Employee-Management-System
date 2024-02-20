@@ -1,14 +1,14 @@
-package com.learning.employemanagementsystem.service;
+package com.learning.employemanagementsystem.service.Impl;
 
-import com.learning.employemanagementsystem.dao.DepartmentDao;
-import com.learning.employemanagementsystem.dao.EmployeeDao;
-import com.learning.employemanagementsystem.dao.ProfileDao;
 import com.learning.employemanagementsystem.dto.AddDepartmentDto;
+import com.learning.employemanagementsystem.entity.Department;
+import com.learning.employemanagementsystem.entity.Profile;
 import com.learning.employemanagementsystem.mapper.DepartmentMapper;
-import com.learning.employemanagementsystem.mapper.ProfileMapper;
-import com.learning.employemanagementsystem.model.DepartmentModel;
-import com.learning.employemanagementsystem.model.EmployeeModel;
-import com.learning.employemanagementsystem.model.ProfileModel;
+import com.learning.employemanagementsystem.entity.Employee;
+import com.learning.employemanagementsystem.repository.DepartmentRepository;
+import com.learning.employemanagementsystem.repository.EmployeeRepository;
+import com.learning.employemanagementsystem.repository.ProfileRepository;
+import com.learning.employemanagementsystem.service.DepartmentService;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,19 +27,17 @@ import java.util.List;
 @AllArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentDao departmentDao;
+    private final DepartmentRepository departmentRepository;
 
-    private final EmployeeDao employeeDao;
+    private final EmployeeRepository employeeRepository;
 
-    private final ProfileDao profileDao;
-
-    private final ProfileMapper profileMapper;
+    private final ProfileRepository profileRepository;
 
     private final DepartmentMapper departmentMapper;
 
     @Override
-    public DepartmentModel add(AddDepartmentDto department) {
-        return departmentDao.save(departmentMapper.addDepartmentToDepartmentModel(department));
+    public Department add(AddDepartmentDto department) {
+        return departmentRepository.save(departmentMapper.addDepartmentDtoToDepartment(department));
     }
 
     public void departmentPermission(MultipartFile file) throws IOException {
@@ -51,7 +48,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new RuntimeException("Sheet Not Found");
         }
 
-        // Read and store the column headings (header)
         Row headerRow = sheet.getRow(0);
         List<String> columnHeadings = new ArrayList<>();
         DataFormatter dataFormatter = new DataFormatter();
@@ -63,9 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             columnHeadings.add(cellValue);
         }
 
-        // Read and print the data
         Iterator<Row> rowIterator = sheet.iterator();
-        // Skip the header row (already processed)
         if (rowIterator.hasNext()) {
             rowIterator.next();
         }
@@ -87,19 +81,19 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         for (List<String> value : rowValues) {
-            DepartmentModel department = departmentDao.getByName(value.get(0));
-            EmployeeModel employee = employeeDao.getByEmail(value.get(1));
+            Department department = departmentRepository.getByName(value.get(0));
+            Employee employee = employeeRepository.getByEmail(value.get(1));
             String action = value.get(2);
             if (employee != null && department != null) {
                 if (action.equalsIgnoreCase("add")) {
-                    ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
-                    profile.setDepartment(departmentMapper.departmentModelToDepartment(department));
-                    profileDao.save(profile);
+                    var profile = employee.getProfile();
+                    profile.setDepartment(departmentMapper.DepartmentToDepartment(department));
+                    profileRepository.save(profile);
                 } else if (action.equalsIgnoreCase("remove")) {
-                    ProfileModel profile = profileMapper.profileToProfileModel(employee.getProfile());
-                    if (profile.getDepartment().getUuid().equals(department.getId())) {
+                    var profile = employee.getProfile();
+                    if (profile.getDepartment().getUuid().equals(department.getUuid())) {
                         profile.setDepartment(null);
-                        profileDao.save(profile);
+                        profileRepository.save(profile);
                     }
                 }
             }
