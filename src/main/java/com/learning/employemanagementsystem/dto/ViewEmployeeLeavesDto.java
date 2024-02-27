@@ -16,6 +16,10 @@ import java.util.UUID;
 public class ViewEmployeeLeavesDto {
     private UUID employeeUuid;
 
+    private String employeeFirstName;
+
+    private String employeeLastName;
+
     private List<Leave> pastLeaves;
 
     private List<Leave> futureLeaves;

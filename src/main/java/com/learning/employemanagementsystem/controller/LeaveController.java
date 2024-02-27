@@ -2,6 +2,8 @@ package com.learning.employemanagementsystem.controller;
 
 import com.learning.employemanagementsystem.dto.ApplyLeaveDto;
 import com.learning.employemanagementsystem.dto.ParseLeaveRequestDto;
+import com.learning.employemanagementsystem.dto.UpdateLeaveByManagerDto;
+import com.learning.employemanagementsystem.entity.LeaveStatus;
 import com.learning.employemanagementsystem.service.LeaveService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,5 +33,17 @@ public class LeaveController {
     @PostMapping("/parse-leave")
     public ResponseEntity<?> parseLeave(@RequestBody ParseLeaveRequestDto parseLeaveDto) {
         return new ResponseEntity<>(leaveService.parseLeave(parseLeaveDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-leaves/manager/{managerUuid}")
+    public ResponseEntity<?> getAllEmployeesLeavesByManager(@PathVariable UUID managerUuid) {
+        return new ResponseEntity<>(leaveService.getAllEmployeesLeavesByManager(managerUuid), HttpStatus.OK);
+    }
+
+    @PostMapping("/update-leaves/manager/{managerUuid}")
+    public ResponseEntity<?> updateLeavesByManager(@PathVariable UUID managerUuid,
+                                                   @RequestParam LeaveStatus status,
+                                                   @RequestBody List<UpdateLeaveByManagerDto> leavesDto) {
+        return new ResponseEntity<>(leaveService.updateLeavesByManager(managerUuid, status, leavesDto), HttpStatus.ACCEPTED);
     }
 }

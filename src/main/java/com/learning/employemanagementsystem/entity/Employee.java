@@ -124,6 +124,10 @@ public class Employee {
     @JsonIgnoreProperties("employee")
     private List<Payroll> payroll;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("employee")
+    private List<Skills> skills;
+
     @Override
     public String toString() {
         return "Employee{" +

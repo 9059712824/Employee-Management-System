@@ -1,8 +1,8 @@
-package com.learning.employemanagementsystem.service.Impl;
+package com.learning.employemanagementsystem.service.impl;
 
 import com.learning.employemanagementsystem.dto.AddDepartmentDto;
 import com.learning.employemanagementsystem.entity.Department;
-import com.learning.employemanagementsystem.entity.Profile;
+import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.DepartmentMapper;
 import com.learning.employemanagementsystem.entity.Employee;
 import com.learning.employemanagementsystem.repository.DepartmentRepository;
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -98,6 +99,27 @@ public class DepartmentServiceImpl implements DepartmentService {
                 }
             }
         }
+    }
+
+    @Override
+    public Department update(UUID departmentUuid, AddDepartmentDto departmentDto) {
+        var department = isDepartmentExists(departmentUuid);
+        department.setName(departmentDto.getName());
+        return departmentRepository.save(department);
+    }
+
+    @Override
+    public void delete(UUID departmentUuid) {
+        var department = isDepartmentExists(departmentUuid);
+        departmentRepository.deleteById(departmentUuid);
+    }
+
+    private Department isDepartmentExists(UUID departmentUuid) {
+        var department = departmentRepository.findById(departmentUuid);
+        if (department.isEmpty()) {
+            throw new NotFoundException("Department not exists with Id: " + departmentUuid);
+        }
+        return department.get();
     }
 
 }
