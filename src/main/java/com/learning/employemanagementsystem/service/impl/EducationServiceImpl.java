@@ -1,4 +1,4 @@
-package com.learning.employemanagementsystem.service.Impl;
+package com.learning.employemanagementsystem.service.impl;
 
 import com.learning.employemanagementsystem.dto.EducationDto;
 import com.learning.employemanagementsystem.entity.EducationDegree;
@@ -51,9 +51,6 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     public Education update(EducationDto educationDto, UUID id) {
-        if (!educationRepository.existsById(id)) {
-            throw new NotFoundException("Education details not found with id: " + id);
-        }
         Education education = getById(id);
         education.setDegree(educationDto.getDegree());
         education.setSchoolName(educationDto.getSchoolName());
@@ -66,30 +63,23 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     public Education getById(UUID id) {
-        var education = educationRepository.findById(id);
-        if (education.isPresent()) {
-            return education.get();
-        }
-        throw new NotFoundException("Education details not found with id: " + id);
+        return educationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Education details not found with id: " + id));
     }
 
     @Override
     public List<Education> getAll(UUID employeeId) {
         List<Education> educations = educationRepository.getAllByEmployee_Uuid(employeeId);
         if (educations == null) {
-            throw new NotFoundException("Education details not  found");
+            throw new NotFoundException("Education details not found");
         }
         return educations;
     }
 
     @Override
     public void deleteById(UUID id) {
-        var education = educationRepository.findById(id);
-        if (education.isPresent()) {
-            educationRepository.deleteById(id);
-        } else {
-            throw new NotFoundException("Education details not found with id: " + id);
-        }
+        var education = getById(id);
+        educationRepository.deleteById(id);
     }
 
 }

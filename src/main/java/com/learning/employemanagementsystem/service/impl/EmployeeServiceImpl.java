@@ -1,4 +1,4 @@
-package com.learning.employemanagementsystem.service.Impl;
+package com.learning.employemanagementsystem.service.impl;
 
 import com.learning.employemanagementsystem.dto.AddEmployeeDto;
 import com.learning.employemanagementsystem.dto.UpdateLeavingDate;
@@ -6,6 +6,7 @@ import com.learning.employemanagementsystem.entity.JobTitleType;
 import com.learning.employemanagementsystem.entity.Profile;
 import com.learning.employemanagementsystem.entity.ProfileStatus;
 import com.learning.employemanagementsystem.exception.AlreadyFoundException;
+import com.learning.employemanagementsystem.exception.InvalidInputException;
 import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.EmployeeMapper;
 import com.learning.employemanagementsystem.entity.Employee;
@@ -41,9 +42,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private static final String ADD = "add";
+    private static final String REMOVE = "remove";
+
     @Override
     public AddEmployeeDto add(AddEmployeeDto employeeDto) {
-        if (employeeRepository.existsByEmail(employeeDto.getEmail())) {
+        if (Boolean.TRUE.equals(employeeRepository.existsByEmail(employeeDto.getEmail()))) {
             throw new AlreadyFoundException("Email already exists: " + employeeDto.getEmail());
         }
         var period = Period.between(employeeDto.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now());
@@ -51,11 +55,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         var employee = employeeMapper.addEmployeeDtoToEmployee(employeeDto);
         employee.setPassword(passwordEncoder.encode(generateRandomPassword()));
         employee.setIsManager(Boolean.FALSE);
+
         var updatedEmployee = employeeRepository.save(employee);
-        var profile = new Profile();
-        profile.setProfileStatus(ProfileStatus.PENDING);
-        profile.setJobTitle(JobTitleType.ENGINEER_TRAINEE);
-        profile.setEmployee(updatedEmployee);
+
+        var profile = Profile.builder()
+                .profileStatus(ProfileStatus.PENDING)
+                .jobTitle(JobTitleType.ENGINEER_TRAINEE)
+                .employee(updatedEmployee)
+                .build();
+
         employee.setProfile(profile);
 
         profileRepository.save(profile);
@@ -98,9 +106,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (StringUtils.isNotBlank(action) && StringUtils.isNotBlank(email)) {
                 Employee employee = employeeRepository.getByEmail(email);
 
-                if ("add".equalsIgnoreCase(action)) {
+                if (ADD.equalsIgnoreCase(action)) {
                     employee.setIsManager(Boolean.TRUE);
-                } else if ("remove".equalsIgnoreCase(action)) {
+                } else if (REMOVE.equalsIgnoreCase(action)) {
+                    var colleaguesByManager = getByManagerUuid(employee.getUuid());
+                    if (!colleaguesByManager.isEmpty()) {
+                        throw new InvalidInputException("Colleagues exists under this manager, Please update their manager details to proceed");
+                    }
                     employee.setIsManager(Boolean.FALSE);
                 }
 
@@ -116,22 +128,26 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (rowData.size() != 3) {
                 continue;
             }
-            String employeeEmail = rowData.get(0), managerEmail = rowData.get(1), action = rowData.get(2);
+            String employeeEmail = rowData.get(0);
+            String managerEmail = rowData.get(1);
+            String action = rowData.get(2);
             if (StringUtils.isNotBlank(employeeEmail) && StringUtils.isNotBlank(managerEmail) && StringUtils.isNotBlank(action)) {
-
-                if (employeeRepository.existsByEmail(employeeEmail) && employeeRepository.existsByEmail(managerEmail)) {
-                    Employee employee = employeeRepository.getByEmail(employeeEmail);
-                    Employee manager = employeeRepository.getByEmail(managerEmail);
-                    if ("add".equalsIgnoreCase(action)) {
-                        employee.setManager(manager);
-                        manager.setIsManager(Boolean.TRUE);
+                existsByEmail(employeeEmail);
+                existsByEmail(managerEmail);
+                var employee = getByEmail(employeeEmail);
+                var manager = getByEmail(managerEmail);
+                if (ADD.equalsIgnoreCase(action)) {
+                    if (manager.getIsManager().equals(Boolean.FALSE)) {
+                        throw new InvalidInputException("Don't have manager access for email" + managerEmail);
+                    }
+                    employee.setManager(manager);
+                    employeeRepository.save(employee);
+                } else if (REMOVE.equalsIgnoreCase(action)) {
+                    if (manager.getUuid().equals(employee.getManager().getUuid())) {
+                        employee.setManager(null);
                         employeeRepository.save(employee);
-                        employeeRepository.save(manager);
-                    } else if ("remove".equalsIgnoreCase(action)) {
-                        if (manager.getUuid().equals(employee.getManager().getUuid())) {
-                            employee.setManager(null);
-                            employeeRepository.save(employee);
-                        }
+                    } else {
+                        throw new InvalidInputException("Invalid Manager details provided");
                     }
                 }
             }
@@ -148,11 +164,28 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    public Employee getByEmail(String email) {
+        var employee = employeeRepository.getByEmail(email);
+
+        if (employee == null) {
+            throw new NotFoundException("Employee not found with email " + email);
+        }
+        return employee;
+    }
+
+    public Boolean existsByEmail(String email) {
+        var isEmployeeExists = employeeRepository.existsByEmail(email);
+        if (Boolean.FALSE.equals(isEmployeeExists)) {
+            throw new NotFoundException("Employee not Exists with email " + email);
+        }
+        return Boolean.TRUE;
+    }
+
     public List<List<String>> fileProcess(MultipartFile file) throws IOException {
         try (XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream())) {
             XSSFSheet sheet = workbook.getSheetAt(0);
             if (sheet == null) {
-                throw new RuntimeException("Sheet Not Found");
+                throw new InvalidInputException("Sheet Not Found");
             }
 
             Row headerRow = sheet.getRow(0);
@@ -174,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<List<String>> rowValues = new ArrayList<>();
             while (rowIterator.hasNext()) {
                 Row dataRow = rowIterator.next();
-                List<String> rowValue = new ArrayList();
+                var rowValue = new ArrayList();
 
                 Iterator<Cell> dataCellIterator = dataRow.cellIterator();
                 while (dataCellIterator.hasNext()) {
@@ -185,10 +218,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                     } else {
                         rowValue.add("");
                     }
-                    System.out.println(cellValue + "\t");
                 }
                 rowValues.add(rowValue);
-                System.out.println();
             }
             return rowValues;
         }

@@ -17,9 +17,9 @@ public class CustomErrorController {
     ResponseEntity handleCustomerNotFoundExceptionError(NotFoundException exception) {
         return new ResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
-//
-//    @ExceptionHandler(LoginException.class)
-//    ResponseEntity handleLoginExceptionError(LoginException exception) {
-//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    ResponseEntity handleLoginExceptionError(InvalidInputException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

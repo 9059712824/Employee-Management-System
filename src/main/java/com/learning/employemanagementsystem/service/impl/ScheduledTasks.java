@@ -1,4 +1,4 @@
-package com.learning.employemanagementsystem.service.Impl;
+package com.learning.employemanagementsystem.service.impl;
 
 import com.learning.employemanagementsystem.entity.ProfileStatus;
 import com.learning.employemanagementsystem.entity.Employee;
