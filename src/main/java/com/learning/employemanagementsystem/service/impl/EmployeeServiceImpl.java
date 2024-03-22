@@ -173,12 +173,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    public Boolean existsByEmail(String email) {
+    public void existsByEmail(String email) {
         var isEmployeeExists = employeeRepository.existsByEmail(email);
         if (Boolean.FALSE.equals(isEmployeeExists)) {
             throw new NotFoundException("Employee not Exists with email " + email);
         }
-        return Boolean.TRUE;
     }
 
     public List<List<String>> fileProcess(MultipartFile file) throws IOException {
@@ -207,7 +206,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<List<String>> rowValues = new ArrayList<>();
             while (rowIterator.hasNext()) {
                 Row dataRow = rowIterator.next();
-                var rowValue = new ArrayList();
+                List<String> rowValue = new ArrayList<>();
 
                 Iterator<Cell> dataCellIterator = dataRow.cellIterator();
                 while (dataCellIterator.hasNext()) {

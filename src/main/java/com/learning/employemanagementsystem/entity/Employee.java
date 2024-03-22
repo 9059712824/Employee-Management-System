@@ -128,21 +128,25 @@ public class Employee {
     @JsonIgnoreProperties("employee")
     private List<Skills> skills;
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + uuid +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", gender=" + gender +
-                ", dateOfBirth=" + dateOfBirth +
-                ", age=" + age +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", joiningDate=" + joiningDate +
-                ", leavingDate=" + leavingDate +
-                ", createdTime=" + createdTime +
-                ", updatedTime=" + updatedTime;
-    }
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("employee")
+    private List<Attendance> attendance;
+
+//    @Override
+//    public String toString() {
+//        return "Employee{" +
+//                "id=" + uuid +
+//                ", firstName='" + firstName + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                ", gender=" + gender +
+//                ", dateOfBirth=" + dateOfBirth +
+//                ", age=" + age +
+//                ", phoneNumber='" + phoneNumber + '\'' +
+//                ", email='" + email + '\'' +
+//                ", password='" + password + '\'' +
+//                ", joiningDate=" + joiningDate +
+//                ", leavingDate=" + leavingDate +
+//                ", createdTime=" + createdTime +
+//                ", updatedTime=" + updatedTime;
+//    }
 }

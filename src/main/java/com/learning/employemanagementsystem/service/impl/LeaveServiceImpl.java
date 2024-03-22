@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,7 +61,7 @@ public class LeaveServiceImpl implements LeaveService {
                         .anyMatch(appliedLeaveDate -> leaveDate.compareTo(appliedLeaveDate) == 1))
                 .findFirst()
                 .ifPresent(date -> {
-                    throw new AlreadyFoundException("Leave already applied for the date " + LocalDate.parse(new SimpleDateFormat(DATE_FORMAT).format(date), DateTimeFormatter.ofPattern(DATE_FORMAT)));
+                    throw new AlreadyFoundException("Leave already applied for the date " + new SimpleDateFormat(DATE_FORMAT).format(date));
                 });
         var leaves = leaveMapper.applyLeaveDtoToLeaveDay(applyLeaveDto);
 

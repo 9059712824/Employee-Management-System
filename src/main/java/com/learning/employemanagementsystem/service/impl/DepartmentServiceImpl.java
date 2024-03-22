@@ -46,7 +46,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Sheet sheet = workbook.getSheetAt(0);
         if (sheet == null) {
-            throw new RuntimeException("Sheet Not Found");
+            throw new NotFoundException("Sheet Not Found");
         }
 
         Row headerRow = sheet.getRow(0);
@@ -75,16 +75,14 @@ public class DepartmentServiceImpl implements DepartmentService {
                 Cell cell = dataCellIterator.next();
                 String cellValue = dataFormatter.formatCellValue(cell);
                 rowValue.add(cellValue);
-                System.out.print(cellValue + "\t");
             }
             rowValues.add(rowValue);
-            System.out.println();
         }
 
         for (List<String> value : rowValues) {
-            Department department = departmentRepository.getByName(value.get(0));
-            Employee employee = employeeRepository.getByEmail(value.get(1));
-            String action = value.get(2);
+            var department = departmentRepository.getByName(value.get(0).trim());
+            var employee = employeeRepository.getByEmail(value.get(1));
+            var action = value.get(2);
             if (employee != null && department != null) {
                 if (action.equalsIgnoreCase("add")) {
                     var profile = employee.getProfile();
@@ -110,7 +108,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void delete(UUID departmentUuid) {
-        var department = isDepartmentExists(departmentUuid);
+        isDepartmentExists(departmentUuid);
         departmentRepository.deleteById(departmentUuid);
     }
 

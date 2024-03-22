@@ -40,7 +40,7 @@ public class EducationServiceImpl implements EducationService {
             var isDegreePresent = educations.stream()
                     .filter(education -> education.getDegree().equals(educationDto.getDegree())).findFirst();
             if (isDegreePresent.isPresent()) {
-                throw new AlreadyFoundException("Degree already exists: " + degree.toString());
+                throw new AlreadyFoundException("Degree already exists: " + degree);
             }
         }
 
@@ -78,7 +78,7 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     public void deleteById(UUID id) {
-        var education = getById(id);
+        getById(id);
         educationRepository.deleteById(id);
     }
 

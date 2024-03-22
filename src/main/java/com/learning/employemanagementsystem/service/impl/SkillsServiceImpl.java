@@ -28,8 +28,8 @@ public class SkillsServiceImpl implements SkillsService {
     public Skills add(SkillsDto skillsDto) {
         inputValidation(skillsDto);
         isSkillExists(skillsDto.getName().trim(), skillsDto.getEmployeeUuid());
+        
         var employee = employeeService.getById(skillsDto.getEmployeeUuid());
-
         var skills = skillsMapper.skillsDtoToSkills(skillsDto);
         skills.setName(skills.getName().trim());
         skills.setEmployee(employee);
@@ -40,7 +40,6 @@ public class SkillsServiceImpl implements SkillsService {
     public Skills update(UUID skillsUuid, SkillsDto skillsDto) {
         inputValidation(skillsDto);
         var employee = employeeService.getById(skillsDto.getEmployeeUuid());
-
         var skills = getById(skillsUuid);
 
         if (Boolean.FALSE.equals(employee.getUuid().equals(skills.getEmployee().getUuid()))) {
