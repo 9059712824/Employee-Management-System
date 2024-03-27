@@ -2,7 +2,7 @@ package com.learning.employemanagementsystem.controller;
 
 import com.learning.employemanagementsystem.dto.ApplyAttendanceDto;
 import com.learning.employemanagementsystem.dto.UpdateAttendanceDto;
-import com.learning.employemanagementsystem.service.impl.AttendanceService;
+import com.learning.employemanagementsystem.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +31,10 @@ public class AttendanceController {
     @GetMapping("/get/{employeeUuid}/attendance/{attendanceUuid}")
     public ResponseEntity<?> get(@PathVariable UUID employeeUuid, @PathVariable UUID attendanceUuid) {
         return new ResponseEntity<>(attendanceService.getByUuid(employeeUuid, attendanceUuid), HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{employeeUuid}")
+    public ResponseEntity<?> getEmployeeAttendance(@PathVariable UUID employeeUuid) {
+        return new ResponseEntity<>(attendanceService.getEmployeeAttendance(employeeUuid), HttpStatus.OK);
     }
 }

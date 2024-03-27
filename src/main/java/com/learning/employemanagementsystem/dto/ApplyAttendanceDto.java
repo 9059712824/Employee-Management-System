@@ -4,6 +4,8 @@ import com.learning.employemanagementsystem.entity.AttendanceShiftType;
 import com.learning.employemanagementsystem.entity.AttendanceStatus;
 import com.learning.employemanagementsystem.entity.AttendanceType;
 import com.learning.employemanagementsystem.entity.WorkMode;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +25,6 @@ public class ApplyAttendanceDto {
 
     private AttendanceStatus attendanceStatus;
 
+    @Temporal(TemporalType.DATE)
     private Date attendanceDate;
 }

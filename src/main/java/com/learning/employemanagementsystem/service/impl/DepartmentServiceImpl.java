@@ -4,7 +4,6 @@ import com.learning.employemanagementsystem.dto.AddDepartmentDto;
 import com.learning.employemanagementsystem.entity.Department;
 import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.DepartmentMapper;
-import com.learning.employemanagementsystem.entity.Employee;
 import com.learning.employemanagementsystem.repository.DepartmentRepository;
 import com.learning.employemanagementsystem.repository.EmployeeRepository;
 import com.learning.employemanagementsystem.repository.ProfileRepository;

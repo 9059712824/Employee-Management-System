@@ -7,6 +7,7 @@ import com.learning.employemanagementsystem.exception.NotFoundException;
 import com.learning.employemanagementsystem.mapper.LeaveMapper;
 import com.learning.employemanagementsystem.repository.EmployeeRepository;
 import com.learning.employemanagementsystem.repository.LeaveRepository;
+import com.learning.employemanagementsystem.service.EmployeeService;
 import com.learning.employemanagementsystem.service.LeaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 public class LeaveServiceImpl implements LeaveService {
 
     private final LeaveRepository leaveRepository;
+
+    private final EmployeeService employeeService;
 
     private final LeaveMapper leaveMapper;
 
@@ -51,18 +54,21 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public List<Leave> applyLeave(UUID employeeId, List<ApplyLeaveDto> applyLeaveDto) {
-        var employee = isEmployeeExists(employeeId);
+        var employee = employeeService.getById(employeeId);
         var appliedLeaves = leaveRepository.getAllByEmployeeUuid(employeeId);
 
         applyLeaveDto.stream()
                 .map(ApplyLeaveDto::getDate)
-                .filter(leaveDate -> appliedLeaves.stream()
-                        .map(Leave::getDate)
-                        .anyMatch(appliedLeaveDate -> leaveDate.compareTo(appliedLeaveDate) == 1))
-                .findFirst()
-                .ifPresent(date -> {
-                    throw new AlreadyFoundException("Leave already applied for the date " + new SimpleDateFormat(DATE_FORMAT).format(date));
+                .map(date -> new SimpleDateFormat(DATE_FORMAT).format(date))
+                .forEach(formattedDate -> {
+                    if(appliedLeaves.stream()
+                            .map(Leave::getDate)
+                            .map(Object::toString)
+                            .anyMatch(formattedDate::equals)) {
+                        throw new AlreadyFoundException("Leave already applied for date " + formattedDate);
+                    }
                 });
+
         var leaves = leaveMapper.applyLeaveDtoToLeaveDay(applyLeaveDto);
 
         setLeaveDayStatus(leaves, LeaveStatus.WAITING_FOR_APPROVAL);
@@ -74,7 +80,7 @@ public class LeaveServiceImpl implements LeaveService {
     @Override
     public ViewEmployeeLeavesDto getLeavesByEmployeeId(UUID employeeId) {
 
-        var employee = isEmployeeExists(employeeId);
+        var employee = employeeService.getById(employeeId);
 
         var leaves = leaveRepository.getAllByEmployeeUuid(employeeId);
 
@@ -141,13 +147,8 @@ public class LeaveServiceImpl implements LeaveService {
         leaves.forEach(leaveDay -> leaveDay.setStatus(status));
     }
 
-    private Employee isEmployeeExists(UUID employeeId) {
-        return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new NotFoundException("Didn't found employee with Id: " + employeeId));
-    }
-
     private void isManager(UUID uuid) {
-        var manager = isEmployeeExists(uuid);
+        var manager = employeeService.getById(uuid);
         if (manager.getIsManager().equals(Boolean.FALSE)) {
             throw new NotFoundException("User is not a Manager");
         }

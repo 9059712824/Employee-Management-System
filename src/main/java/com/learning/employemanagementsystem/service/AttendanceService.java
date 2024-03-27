@@ -1,7 +1,8 @@
-package com.learning.employemanagementsystem.service.impl;
+package com.learning.employemanagementsystem.service;
 
 import com.learning.employemanagementsystem.dto.ApplyAttendanceDto;
 import com.learning.employemanagementsystem.dto.UpdateAttendanceDto;
+import com.learning.employemanagementsystem.dto.ViewEmployeeAttendanceDto;
 import com.learning.employemanagementsystem.entity.Attendance;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface AttendanceService {
     Attendance update(UUID employeeUuid, UUID attendanceUuid, UpdateAttendanceDto attendanceDto);
 
     Attendance getByUuid(UUID employeeUuid, UUID attendanceUuid);
+
+    ViewEmployeeAttendanceDto getEmployeeAttendance(UUID employeeUuid);
 }
